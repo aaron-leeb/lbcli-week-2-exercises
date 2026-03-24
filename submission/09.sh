@@ -12,4 +12,4 @@ TXID=$(bitcoin-cli -regtest decoderawtransaction "$RAW_TX" | jq -r '.txid')
 INPUTS=$(jq -n --arg txid "$TXID" '[{"txid":$txid,"vout":0,"sequence":1},{"txid":$txid,"vout":1,"sequence":1}]')
 OUTPUTS="{$RECIPIENT_ADDRESS:0.2}"
 
-bitcoin-cli -regtest createrawtransaction inputs="$INPUTS" outputs="$OUTPUTS"
+bitcoin-cli -regtest -named createrawtransaction inputs="$INPUTS" outputs="$OUTPUTS"

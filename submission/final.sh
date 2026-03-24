@@ -184,8 +184,8 @@ CHANGE_AMOUNT=$((UTXO_VALUE - PAYMENT_AMOUNT - FEE_SATS))
 check_cmd "Change calculation" "CHANGE_AMOUNT" "$CHANGE_AMOUNT"
 
 # Convert amounts to BTC for createrawtransaction
-PAYMENT_BTC=$(echo "scale=8; $PAYMENT_AMOUNT / 100000000" | bc)
-CHANGE_BTC=$(echo "scale=8; $CHANGE_AMOUNT / 100000000" | bc)
+PAYMENT_BTC=$(awk "BEGIN {printf \"%.8f\", $PAYMENT_AMOUNT / 100000000}")
+CHANGE_BTC=$(awk "BEGIN {printf \"%.8f\", $CHANGE_AMOUNT / 100000000}")
 
 # STUDENT TASK: Create the outputs JSON structure
 TX_OUTPUTS=$(echo "{\"$PAYMENT_ADDRESS\": $PAYMENT_BTC, \"$CHANGE_ADDRESS\": $CHANGE_BTC}")
@@ -315,7 +315,7 @@ CHILD_SEND_AMOUNT=$((CHANGE_AMOUNT - CHILD_FEE_SATS))
 check_cmd "Child amount calculation" "CHILD_SEND_AMOUNT" "$CHILD_SEND_AMOUNT"
 
 # Convert to BTC
-CHILD_SEND_BTC=$(echo "scale=8; $CHILD_SEND_AMOUNT / 100000000" | bc)
+CHILD_SEND_BTC=$(awk "BEGIN {printf \"%.8f\", $CHILD_SEND_AMOUNT / 100000000}")
 
 # STUDENT TASK: Create the outputs JSON structure
 CHILD_OUTPUTS=$(echo "{\"$CHILD_RECIPIENT\": $CHILD_SEND_BTC}")
@@ -366,7 +366,7 @@ TIMELOCK_AMOUNT=$((SECONDARY_OUTPUT_VALUE - TIMELOCK_FEE))
 check_cmd "Timelock amount calculation" "TIMELOCK_AMOUNT" "$TIMELOCK_AMOUNT"
 
 # Convert to BTC
-TIMELOCK_BTC=$(echo "scale=8; $TIMELOCK_AMOUNT / 100000000" | bc)
+TIMELOCK_BTC=$(awk "BEGIN {printf \"%.8f\", $TIMELOCK_AMOUNT / 100000000}")
 
 # STUDENT TASK: Create the outputs JSON structure
 TIMELOCK_OUTPUTS=$(echo "{\"$TIMELOCK_ADDRESS\": $TIMELOCK_BTC}")

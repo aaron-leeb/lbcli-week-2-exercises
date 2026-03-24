@@ -253,7 +253,7 @@ echo ""
 echo "Creating a simple transaction for signing..."
 
 # STUDENT TASK: Create a simple transaction that sends funds to the test address
-SIMPLE_TX_INPUTS='[{"txid":"'$TXID'","vout":0,"sequence":4294967293}]'
+SIMPLE_TX_INPUTS='[{"txid":"'$TXID'","vout":0,"sequence":1}]'
 SIMPLE_TX_OUTPUTS='{"'$TEST_ADDRESS'":0.0001}'
 
 # Create a raw transaction for signing using the SIMPLE_TX_INPUTS and SIMPLE_TX_OUTPUTS
@@ -293,16 +293,16 @@ echo "Parent transaction ID: $PARENT_TXID"
 
 # STUDENT TASK: Identify the change output index from the parent transaction
 # WRITE YOUR SOLUTION BELOW:
-CHANGE_OUTPUT_INDEX=1
+CHANGE_OUTPUT_INDEX=$(bitcoin-cli -regtest decoderawtransaction "$RAW_TX" | jq -r '.vout | to_entries[] | select(.value.scriptPubKey.addresses[0] == "'$CHANGE_ADDRESS'") | .key')
 check_cmd "Change output identification" "CHANGE_OUTPUT_INDEX" "$CHANGE_OUTPUT_INDEX"
 
 # STUDENT TASK: Create the input JSON structure for the child transaction
 # WRITE YOUR SOLUTION BELOW:
-CHILD_INPUTS=$(jq -n --arg txid "$PARENT_TXID" --argjson vout "$CHANGE_OUTPUT_INDEX" '[{"txid":$txid,"vout":$vout,"sequence":4294967293}]')
+CHILD_INPUTS=$(jq -n --arg txid "$PARENT_TXID" --argjson vout "$CHANGE_OUTPUT_INDEX" '[{"txid":$txid,"vout":$vout,"sequence":1}]')
 check_cmd "Child input creation" "CHILD_INPUTS" "$CHILD_INPUTS"
 
 # STUDENT TASK: Calculate fees, allowing for a high fee to help the parent transaction
-CHILD_TX_SIZE=140
+CHILD_TX_SIZE=$((10 + 68 * 1 + 31 * 1)) # Base + 1 input + 1 output
 check_cmd "Child transaction size calculation" "CHILD_TX_SIZE" "$CHILD_TX_SIZE"
 
 CHILD_FEE_RATE=20 # satoshis/vbyte

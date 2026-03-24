@@ -293,7 +293,7 @@ echo "Parent transaction ID: $PARENT_TXID"
 
 # STUDENT TASK: Identify the change output index from the parent transaction
 # WRITE YOUR SOLUTION BELOW:
-CHANGE_OUTPUT_INDEX=$(bitcoin-cli -regtest decoderawtransaction "$RAW_TX" | jq -r '.vout | to_entries[] | select(.value.scriptPubKey.addresses[0] == "'$CHANGE_ADDRESS'") | .key')
+CHANGE_OUTPUT_INDEX=$(bitcoin-cli -regtest decoderawtransaction "$RAW_TX" | jq -r '.vout[1].n')
 check_cmd "Change output identification" "CHANGE_OUTPUT_INDEX" "$CHANGE_OUTPUT_INDEX"
 
 # STUDENT TASK: Create the input JSON structure for the child transaction

@@ -168,7 +168,7 @@ PAYMENT_ADDRESS="2MvLcssW49n9atmksjwg2ZCMsEMsoj3pzUP"
 CHANGE_ADDRESS="bcrt1qg09ftw43jvlhj4wlwwhkxccjzmda3kdm4y83ht"
 
 # STUDENT TASK: Create a proper input JSON for createrawtransaction
-TX_INPUTS=$(jq -n --arg txid "$TXID" --arg vout "$UTXO_VOUT_INDEX" '[{"txid":$txid,"vout":$vout,"sequence":1}]')
+TX_INPUTS=$(jq -n --arg txid "$TXID" --argjson vout "$UTXO_VOUT_INDEX" '[{"txid":$txid,"vout":$vout,"sequence":1}]')
 check_cmd "Input JSON creation" "TX_INPUTS" "$TX_INPUTS"
 
 # Verify RBF is enabled in the input structure
@@ -188,7 +188,7 @@ PAYMENT_BTC=$(echo "scale=8; $PAYMENT_AMOUNT / 100000000" | bc)
 CHANGE_BTC=$(echo "scale=8; $CHANGE_AMOUNT / 100000000" | bc)
 
 # STUDENT TASK: Create the outputs JSON structure
-TX_OUTPUTS=$(jq -n --arg payment "$PAYMENT_BTC" --arg change "$CHANGE_BTC" '{ "'"$PAYMENT_ADDRESS"'": $payment, "'"$CHANGE_ADDRESS"'": $change }')
+TX_OUTPUTS=$(echo "{\"$PAYMENT_ADDRESS\": $PAYMENT_BTC, \"$CHANGE_ADDRESS\": $CHANGE_BTC}")
 check_cmd "Output JSON creation" "TX_OUTPUTS" "$TX_OUTPUTS"
 
 # STUDENT TASK: Create the raw transaction
@@ -298,7 +298,7 @@ check_cmd "Change output identification" "CHANGE_OUTPUT_INDEX" "$CHANGE_OUTPUT_I
 
 # STUDENT TASK: Create the input JSON structure for the child transaction
 # WRITE YOUR SOLUTION BELOW:
-CHILD_INPUTS=$(jq -n --arg txid "$PARENT_TXID" --arg vout "$CHANGE_OUTPUT_INDEX" '[{"txid":$txid,"vout":$vout,"sequence":4294967293}]')
+CHILD_INPUTS=$(jq -n --arg txid "$PARENT_TXID" --argjson vout "$CHANGE_OUTPUT_INDEX" '[{"txid":$txid,"vout":$vout,"sequence":4294967293}]')
 check_cmd "Child input creation" "CHILD_INPUTS" "$CHILD_INPUTS"
 
 # STUDENT TASK: Calculate fees, allowing for a high fee to help the parent transaction
@@ -318,7 +318,7 @@ check_cmd "Child amount calculation" "CHILD_SEND_AMOUNT" "$CHILD_SEND_AMOUNT"
 CHILD_SEND_BTC=$(echo "scale=8; $CHILD_SEND_AMOUNT / 100000000" | bc)
 
 # STUDENT TASK: Create the outputs JSON structure
-CHILD_OUTPUTS=$(jq -n --arg recipient "$CHILD_RECIPIENT" --arg amount "$CHILD_SEND_BTC" '{($recipient): $amount}')
+CHILD_OUTPUTS=$(echo "{\"$CHILD_RECIPIENT\": $CHILD_SEND_BTC}")
 check_cmd "Child output creation" "CHILD_OUTPUTS" "$CHILD_OUTPUTS"
 
 # STUDENT TASK: Create the raw child transaction
@@ -350,7 +350,7 @@ echo "Secondary transaction ID: $SECONDARY_TXID"
 
 # STUDENT TASK: Create the input JSON structure with a 10-block relative timelock
 # WRITE YOUR SOLUTION BELOW:
-TIMELOCK_INPUTS=$(jq -n --arg txid "$SECONDARY_TXID" '[{"txid":$txid,"vout":0,"sequence":10}]')
+TIMELOCK_INPUTS=$(jq -n --arg txid "$SECONDARY_TXID" --argjson vout 0 '[{"txid":$txid,"vout":$vout,"sequence":10}]')
 check_cmd "Timelock input creation" "TIMELOCK_INPUTS" "$TIMELOCK_INPUTS"
 
 # Recipient address for timelock funds
@@ -369,7 +369,7 @@ check_cmd "Timelock amount calculation" "TIMELOCK_AMOUNT" "$TIMELOCK_AMOUNT"
 TIMELOCK_BTC=$(echo "scale=8; $TIMELOCK_AMOUNT / 100000000" | bc)
 
 # STUDENT TASK: Create the outputs JSON structure
-TIMELOCK_OUTPUTS=$(jq -n --arg addr "$TIMELOCK_ADDRESS" --arg amt "$TIMELOCK_BTC" '{($addr): $amt}')
+TIMELOCK_OUTPUTS=$(echo "{\"$TIMELOCK_ADDRESS\": $TIMELOCK_BTC}")
 check_cmd "Timelock output creation" "TIMELOCK_OUTPUTS" "$TIMELOCK_OUTPUTS"
 
 # STUDENT TASK: Create the raw transaction with timelock
